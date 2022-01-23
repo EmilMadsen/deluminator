@@ -6,10 +6,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-public class DeluminatorApplication {
+public class App {
 
 	public static void main(String[] args) {
-		SpringApplication.run(DeluminatorApplication.class, args);
+		SpringApplication.run(App.class, args);
 	}
 
 }
