@@ -1,5 +1,6 @@
 package dk.emilmadsen.deluminator.scheduled;
 
+import dk.emilmadsen.deluminator.discord.DiscordBot;
 import dk.emilmadsen.deluminator.model.PingHistory;
 import dk.emilmadsen.deluminator.model.ReachabilityStatus;
 import dk.emilmadsen.deluminator.service.PingService;
@@ -20,9 +21,11 @@ public class CheckIpsJob {
     private List<PingHistory> pingTargets = new ArrayList<>();
 
     private final PingService pingService;
+    private final DiscordBot discordBot;
 
-    public CheckIpsJob(PingService pingService, @Value("${iplist:[]}") String[] ipList) {
+    public CheckIpsJob(PingService pingService, @Value("${iplist:[]}") String[] ipList, DiscordBot discordBot) {
         this.pingService = pingService;
+        this.discordBot = discordBot;
         for (String ip : ipList) {
             pingTargets.add(new PingHistory(ip));
         }
@@ -45,7 +48,11 @@ public class CheckIpsJob {
             switch (status) {
                 case INCONCLUSIVE -> log.warn("not enough history logged to determine status on ip: {}", target.getIp());
                 case REACHABLE -> log.info("target: {} is reachable - all is good.", target.getIp());
-                case UNREACHABLE -> log.warn("target: {} is not reachable!", target.getIp()); // TODO: sound the alarm
+                case UNREACHABLE -> {
+                    String msg = String.format("target: %s is not reachable!", target.getIp());
+                    log.warn(msg);
+                    discordBot.notifyChannel(msg, DiscordBot.CHANNELID_LYS);
+                }
             }
 
         });
