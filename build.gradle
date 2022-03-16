@@ -22,6 +22,10 @@ dependencies {
 	testImplementation 'org.mockito:mockito-inline:2.13.0'
 }
 
+jar {
+	enabled = false
+}
+
 test {
 	useJUnitPlatform()
 }
