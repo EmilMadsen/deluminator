@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 public class PingHistory {
-    private static final int MAX_HISTORY_LENGTH = 50;
+    private static final int MAX_HISTORY_LENGTH = 15;
 
     private String ip;
     private List<Boolean> history = new LinkedList<>();
