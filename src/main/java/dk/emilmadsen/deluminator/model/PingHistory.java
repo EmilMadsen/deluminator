@@ -21,7 +21,7 @@ public class PingHistory {
         ensureMaxLength();
     }
 
-    public ReachabilityStatus isHistoricallyReachable() {
+    public ReachabilityStatus getReachability() {
         if (history.size() == MAX_HISTORY_LENGTH) {
             if (history.stream().allMatch(item -> item == Boolean.FALSE)) {
                 return ReachabilityStatus.UNREACHABLE;
