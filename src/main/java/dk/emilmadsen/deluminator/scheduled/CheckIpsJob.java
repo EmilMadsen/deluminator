@@ -16,7 +16,7 @@ import java.util.List;
 @Slf4j
 public class CheckIpsJob {
     private static final int PING_DELAY = 1000 * 15;
-    private static final int CHECK_DELAY = 1000 * 60 * 3;
+    private static final int CHECK_DELAY = 1000 * 60 * 5;
 
     private List<PingHistory> pingTargets = new ArrayList<>();
 
@@ -44,19 +44,18 @@ public class CheckIpsJob {
     @Scheduled(fixedDelay = CHECK_DELAY)
     public void checkTargets() {
         pingTargets.forEach(target -> {
-            ReachabilityStatus status = target.isHistoricallyReachable();
+            ReachabilityStatus status = target.getReachability();
             switch (status) {
                 case INCONCLUSIVE -> log.warn("not enough history logged to determine status on ip: {}", target.getIp());
                 case REACHABLE -> log.info("target: {} is reachable - all is good.", target.getIp());
-                case UNREACHABLE -> {
-                    String msg = String.format("target: %s is not reachable!", target.getIp());
-                    log.warn(msg);
-                    discordBot.notifyChannel(msg, DiscordBot.CHANNELID_LYS);
-                    discordBot.spawnShutdownButton();
-                }
+                case UNREACHABLE -> log.warn("target: {} is not reachable!", target.getIp());
             }
-
         });
+
+        if (pingTargets.stream().allMatch(target -> target.getReachability() == ReachabilityStatus.UNREACHABLE)) {
+            discordBot.notifyChannel("No reachable targets", DiscordBot.CHANNELID_LYS);
+            discordBot.spawnShutdownButton();
+        }
     }
 
 }
