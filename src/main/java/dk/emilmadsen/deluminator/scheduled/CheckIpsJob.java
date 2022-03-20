@@ -52,6 +52,7 @@ public class CheckIpsJob {
                     String msg = String.format("target: %s is not reachable!", target.getIp());
                     log.warn(msg);
                     discordBot.notifyChannel(msg, DiscordBot.CHANNELID_LYS);
+                    discordBot.spawnShutdownButton();
                 }
             }
 
